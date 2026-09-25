@@ -1,0 +1,42 @@
+@baseUrl = http://localhost:5000/api
+@claimId = REPLACE_WITH_A_REAL_CLAIM_ID
+@studentNumber = ST2026001
+
+### Health check
+GET {{baseUrl}}/health
+
+### Submit a valid claim (expected 201 Created)
+POST {{baseUrl}}/claims
+Content-Type: application/json
+
+{
+  "studentNumber": "{{studentNumber}}",
+  "firstName": "Thando",
+  "surname": "Mokoena",
+  "hoursWorked": 12.5
+}
+
+### Search recent claims by student number (expected 200 OK)
+GET {{baseUrl}}/claims/student/{{studentNumber}}
+
+### Retrieve one claim by ID (replace @claimId first)
+GET {{baseUrl}}/claims/{{claimId}}
+
+### Cancel a Pending claim (expected 200 OK)
+PATCH {{baseUrl}}/claims/{{claimId}}/cancel
+
+### Cancel the same claim again (expected 409 Conflict)
+PATCH {{baseUrl}}/claims/{{claimId}}/cancel
+
+### Prove server-controlled fields cannot be supplied (expected 400 Bad Request)
+POST {{baseUrl}}/claims
+Content-Type: application/json
+
+{
+  "studentNumber": "ST2026002",
+  "firstName": "Lebo",
+  "surname": "Nkosi",
+  "hoursWorked": 5,
+  "hourlyRate": 999,
+  "status": "Approved"
+}
